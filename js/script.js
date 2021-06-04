@@ -18,8 +18,8 @@
 Для получения доступа к значению input - обращаемся к нему как input.value;
 P.S. Здесь есть несколько вариантов решения задачи, принимается любой, но рабочий.
 + 2) Если название фильма больше, чем 21 символ - обрезать его и добавить три точки
-3) При клике на мусорную корзину - элемент будет удаляться из списка (сложно)
-4) Если в форме стоит галочка "Сделать любимым" - в консоль вывести сообщение: 
++ 3) При клике на мусорную корзину - элемент будет удаляться из списка (сложно)
++ 4) Если в форме стоит галочка "Сделать любимым" - в консоль вывести сообщение: 
 "Добавляем любимый фильм"
 5) Фильмы должны быть отсортированы по алфавиту */
 'use strict';
@@ -35,17 +35,36 @@ const movieDB = {
 };
 
 const addForm = document.querySelector('.add'), //choose form
-    buttonConfirm = addForm.lastElementChild;   //choose button confirf
-let addMovie = addForm.childNodes[5];//choose input text
+    buttonConfirm = addForm.lastElementChild, //choose button confirf
+    markInputFilms = document.querySelector('input[type="checkbox"]'); // choose <input type="checkbox">
+let addMovie = addForm.childNodes[5]; //choose input text
 
-buttonConfirm.addEventListener('click', (event) => { //add input.value to the list of films
+
+buttonConfirm.addEventListener('click', (event) => { //add input.value to the DB
     event.preventDefault();
-    if (addMovie.value.length > 21) {   //check for length
+    let fLog = () => {
+        const str = 'favorite',
+            strOne = 'ordinary';
+        if (markInputFilms.checked === true) {
+            return str;
+        } else {
+            return strOne;
+        }
+    };
+    let showLog = () => console.log(`Added ${fLog()} film :  ${addMovie.value}`),
+        sortDb = () => movieDB.movies.sort();
+
+    if (addMovie.value.length > 21) { //check for length
         const str = addMovie.value.slice(0, 21); //add value to the DB
         movieDB.movies.push(`${str}...`);
+        showLog();
+        sortDb();
+
     } else {
         movieDB.movies.push(addMovie.value); ////add value to the DB
+        showLog();
         movieDB.movies.sort();
+        sortDb();
     }
 
 });
@@ -53,8 +72,8 @@ buttonConfirm.addEventListener('click', (event) => { //add input.value to the li
 const ad = document.querySelectorAll("img[alt = 'some picture']"),
     genreMars = document.querySelectorAll('.promo__genre')[0],
     poster = genreMars.parentNode,
-    filmsList = document.querySelectorAll('.promo__interactive-item');
-    
+    filmsList = document.querySelector('.promo__interactive-list');
+
 
 ad.forEach((item, index) => { //delete all ad bloks
     ad[index].remove();
@@ -65,11 +84,16 @@ poster.style.backgroundImage = 'url(img/bg.jpg)'; //choose backgroundImage
 
 movieDB.movies.sort(); // sort movies in array movieDB.movies 
 
-filmsList.forEach(function (item, index) { //input values of object- movieDB to the li .promo__interactive-item
-    //item.innerHTML = `${movieDB.movies[index]} <div class="delete"></div>`;
-    item.insertAdjacentText("afterbegin", `${index + 1}. ${movieDB.movies[index]}`);
+movieDB.movies.forEach(function (item, index) { //input values of object- movieDB to the li .promo__interactive-item
+    filmsList.insertAdjacentHTML("beforeend", `<li class="promo__interactive-item"> ${item}<div class = "delete" >`); //add descriptor to filmlist
 });
 
-
-
-const trashDell = document.querySelectorAll('.delete');
+const trashDell = document.querySelectorAll('.delete'); //choose all trashes
+trashDell.forEach(item => { // add delete event on click on each trash
+    item.addEventListener('click', function () {
+        const liParent = item.parentNode;
+        console.log(`Was delete : `);
+        console.log(liParent);
+        liParent.remove();
+    });
+});
