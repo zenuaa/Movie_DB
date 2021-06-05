@@ -38,7 +38,51 @@ const addForm = document.querySelector('.add'), //choose form
     buttonConfirm = addForm.lastElementChild, //choose button confirf
     markInputFilms = document.querySelector('input[type="checkbox"]'); // choose <input type="checkbox">
 let addMovie = addForm.childNodes[5]; //choose input text
+const ad = document.querySelectorAll("img[alt = 'some picture']"),
+    genreMars = document.querySelectorAll('.promo__genre')[0],
+    poster = genreMars.parentNode,
+    filmsList = document.querySelector('.promo__interactive-list');
+let trashDell;
 
+let addNewFilmlist = function () { //input values of object- movieDB to the li .promo__interactive-item
+    movieDB.movies.forEach(function (item, index) {
+        filmsList.insertAdjacentHTML("beforeend", `<li class="promo__interactive-item"> ${index +1}. ${item}<div class = "delete" >`); //add descriptor to filmlist
+    });
+    trashDell = document.querySelectorAll('.delete'); //choose all trashes
+
+};
+let updateFilmList = () => {
+    for (let i = 0; i < filmsList.children.length; i += 1) { // delete all <li class="promo__interactive-item">
+        filmsList.children[i].remove();
+        i -= 1;
+    }
+    addNewFilmlist();
+
+};
+
+movieDB.movies.sort(); // sort movies in array movieDB.movies 
+addNewFilmlist();
+
+let addEventTresh = function () { // add delete event on click on each trash
+    trashDell.forEach((item, index) => {
+        item.addEventListener('click', function () {
+            let liParent = item.parentNode,
+                valueDb = liParent.innerText.slice(3);
+            let trueIndex = movieDB.movies.indexOf(valueDb); //find index for DB  
+            console.log(`Was delete : `);
+            console.log(liParent);
+            liParent.remove();
+            delete movieDB.movies[trueIndex];
+            movieDB.movies.sort();
+            updateFilmList();
+            addEventTresh();
+        }, {
+            once: true
+        });
+
+    });
+};
+addEventTresh();
 
 buttonConfirm.addEventListener('click', (event) => { //add input.value to the DB
     event.preventDefault();
@@ -67,13 +111,10 @@ buttonConfirm.addEventListener('click', (event) => { //add input.value to the DB
         sortDb();
     }
 
+    updateFilmList();
+    addEventTresh();
+
 });
-
-const ad = document.querySelectorAll("img[alt = 'some picture']"),
-    genreMars = document.querySelectorAll('.promo__genre')[0],
-    poster = genreMars.parentNode,
-    filmsList = document.querySelector('.promo__interactive-list');
-
 
 ad.forEach((item, index) => { //delete all ad bloks
     ad[index].remove();
@@ -81,19 +122,3 @@ ad.forEach((item, index) => { //delete all ad bloks
 
 genreMars.textContent = 'Драма'; //choose genre of the film
 poster.style.backgroundImage = 'url(img/bg.jpg)'; //choose backgroundImage
-
-movieDB.movies.sort(); // sort movies in array movieDB.movies 
-
-movieDB.movies.forEach(function (item, index) { //input values of object- movieDB to the li .promo__interactive-item
-    filmsList.insertAdjacentHTML("beforeend", `<li class="promo__interactive-item"> ${item}<div class = "delete" >`); //add descriptor to filmlist
-});
-
-const trashDell = document.querySelectorAll('.delete'); //choose all trashes
-trashDell.forEach(item => { // add delete event on click on each trash
-    item.addEventListener('click', function () {
-        const liParent = item.parentNode;
-        console.log(`Was delete : `);
-        console.log(liParent);
-        liParent.remove();
-    });
-});
